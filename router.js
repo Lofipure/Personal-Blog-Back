@@ -6,7 +6,20 @@ router.get('/default/getArticleList', async (ctx) => {
 router.get('/default/getArticleById', async (ctx) => {
     ctx.body = { data: await article.getArticleById(ctx.query.id) };
 });
-
+router.post('/admin/addNewArticle', async (ctx) => {
+    new Promise((resolve, reject) => {
+        let postData = '';
+        ctx.req.on('data', data => {
+            postData += data;
+        });
+        ctx.req.on('end', () => {
+            resolve(JSON.parse(postData));
+        })
+    }).then(data => {
+        ctx.body = article.addNewArticle(data);
+    });
+    ctx.body = true;
+})
 
 router.get('/admin/showAllUsers', async (ctx) => {
     ctx.body = { data: await admin.getAllInfo() };
@@ -22,7 +35,6 @@ router.post('/admin/addNewStudent', async (ctx) => {
             resolve(JSON.parse(postData));
         });
     }).then(data => {
-        // 后端Controller接收到对象后，给Model传递
         admin.addNewStudent(data);
     });
     ctx.body = true;

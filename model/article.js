@@ -6,13 +6,9 @@ class Article {
     }
 
     getArticleList() {
-        let sql = 'SELECT article.id as id,' +
-            'article.title as title,' +
-            'article.introduce as introduce,' +
-            "FROM_UNIXTIME(article.add_time,' %Y-%m-%d %H:%i:%s' ) as add_time," +
-            'article.view_count as view_count ,' +
-            '.type.type_number as type_name ' +
-            'FROM article LEFT JOIN type ON article.type_id = type.id';
+        let sql = 'select id as id, title as title, ' +
+            'article_content as articleContent, article_introduce as articleIntroduce, ' +
+            'add_time as addTime, tags as tags from article; ';
         return new Promise((resolve, reject) => {
             connection.query(sql, (err, results) => {
                 if (!err) {
@@ -24,23 +20,34 @@ class Article {
 
     async getArticleById(id) {
         return new Promise((resolve, reject) => {
-            let sql = 'SELECT article.id as id,' +
-                'article.title as title,' +
-                'article.introduce as introduce,' +
-                'article.article_content as article_content,' +
-                "FROM_UNIXTIME(article.add_time,'%Y-%m-%d %H:%i:%s' ) as add_time," +
-                'article.view_count as view_count ,' +
-                'type.type_number as type_name ,' +
-                'type.id as type_id ' +
-                'FROM article LEFT JOIN type ON article.type_id = type.id ' +
-                'WHERE article.id=' + id;
+            let sql = "select id as id, title as title, article_content as articleContent, " +
+                "article_introduce as articleIntroduce, add_time as addTime," +
+                "tags as tags from article where id = " + id;
             connection.query(sql, (err, result) => {
                 if (!err) {
                     resolve(result);
                 }
             });
         });
+    }
 
+    addNewArticle(data) {
+        let articleField = ' (title, article_content, article_introduce, tags, add_time) ';
+        let sql = 'insert into article ' + articleField + 'values (';
+        for (let index in data) {
+            sql += `"${data[index]}",`;
+        }
+        sql = sql.substring(0, sql.length - 1);
+        sql += ");";
+
+        // console.log(sql);
+        connection.query(sql, (err, result, field) => {
+            if (!err) {
+                return true;
+            } else {
+                console.log(err);
+            }
+        })
     }
 }
 
