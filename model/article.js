@@ -8,7 +8,7 @@ class Article {
     getArticleList() {
         let sql = 'select id as id, title as title, ' +
             'article_content as articleContent, article_introduce as articleIntroduce, ' +
-            'add_time as addTime, tags as tags from article; ';
+            'add_time as addTime, tags as tags from article order by id desc; ';
         return new Promise((resolve, reject) => {
             connection.query(sql, (err, results) => {
                 if (!err) {
@@ -46,6 +46,18 @@ class Article {
                 return true;
             } else {
                 console.log(err);
+            }
+        })
+    }
+
+    deleteArticleById(id) {
+        let sql = "delete from article where id = " + id + ";";
+        connection.query(sql, (err, result, field) => {
+            if (!err) {
+                return true;
+            } else {
+                console.log(err);
+                return false;
             }
         })
     }
